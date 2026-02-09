@@ -2,64 +2,114 @@ import SwiftUI
 
 struct WarmupModelInfoView: View {
     var body: some View {
-        List {
-            Section {
-                Label("Modèle Progressif", systemImage: WarmupModel.progressive.icon)
-                    .font(.title3.weight(.semibold))
-                Text("Idéal pour les charges maximales et la force. On augmente progressivement le pourcentage du poids de travail pour préparer le système nerveux et affiner la technique.")
-                    .font(.body)
-                    .foregroundColor(.secondary)
+        ZStack {
+            AppBackgroundView()
 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Protocole recommandé")
-                        .font(.headline)
-                    Label("50-60% × 8 répétitions", systemImage: "1.circle")
-                    Label("70% × 5 répétitions", systemImage: "2.circle")
-                    Label("80% × 3 répétitions", systemImage: "3.circle")
-                    Label("90-95% × 1 répétition", systemImage: "4.circle")
-                    Text("Les athlètes avancés peuvent ajouter une montée intermédiaire supplémentaire ou un single léger à 92%.")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
+            ScrollView {
+                VStack(spacing: 16) {
+                    modelCard(
+                        title: Localization.localizedString("Modèle Progressif"),
+                        icon: WarmupModel.progressive.icon,
+                        iconGradient: AppTheme.accentGradient,
+                        description: Localization.localizedString("Idéal pour les charges maximales et la force. On augmente progressivement le pourcentage du poids de travail pour préparer le système nerveux et affiner la technique."),
+                        protocolLines: [
+                            Localization.localizedString("50-60% × 8 répétitions"),
+                            Localization.localizedString("70% × 5 répétitions"),
+                            Localization.localizedString("80% × 3 répétitions"),
+                            Localization.localizedString("90-95% × 1 répétition")
+                        ],
+                        detail: Localization.localizedString("Les athlètes avancés peuvent ajouter une montée intermédiaire supplémentaire ou un single léger à 92%."),
+                        whenToUse: Localization.localizedString("• Séances de force lourde (squat, développé couché, soulevé de terre).\n• Objectif : maximiser la performance sur une charge principale.\n• Parfait pour les pratiquants intermédiaires et avancés qui veulent limiter les surprises sur la série de travail.")
+                    )
+
+                    modelCard(
+                        title: Localization.localizedString("Modèle Potentiation 80%"),
+                        icon: WarmupModel.potentiation80.icon,
+                        iconGradient: AppTheme.coolGradient,
+                        description: Localization.localizedString("Échauffement court et intense pour passer rapidement aux séries effectives. Utilise une montée directe vers 80-85% pour activer sans générer trop de fatigue."),
+                        protocolLines: [
+                            Localization.localizedString("≈50% × 6-8 répétitions"),
+                            Localization.localizedString("≈80% × 3-5 répétitions")
+                        ],
+                        detail: Localization.localizedString("Les pratiquants avancés peuvent ajouter un single à 90-92% pour maximiser la potentiation."),
+                        whenToUse: Localization.localizedString("• Séances explosives ou de vitesse.\n• Athlètes confirmés disposant de peu de temps.\n• À privilégier sur les mouvements polyarticulaires. Pour les isolations, limitez-vous à 1-2 séries légères.")
+                    )
                 }
-                .padding(.top, 8)
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Quand l'utiliser ?")
-                        .font(.headline)
-                    Text("• Séances de force lourde (squat, développé couché, soulevé de terre).\n• Objectif : maximiser la performance sur une charge principale.\n• Parfait pour les pratiquants intermédiaires et avancés qui veulent limiter les surprises sur la série de travail.")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
-            }
-
-            Section {
-                Label("Modèle Potentiation 80%", systemImage: WarmupModel.potentiation80.icon)
-                    .font(.title3.weight(.semibold))
-                Text("Échauffement court et intense pour passer rapidement aux séries effectives. Utilise une montée directe vers 80-85% pour activer sans générer trop de fatigue.")
-                    .font(.body)
-                    .foregroundColor(.secondary)
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Protocole recommandé")
-                        .font(.headline)
-                    Label("≈50% × 6-8 répétitions", systemImage: "1.circle")
-                    Label("≈80% × 3-5 répétitions", systemImage: "2.circle")
-                    Text("Les pratiquants avancés peuvent ajouter un single à 90-92% pour maximiser la potentiation.")
-                        .font(.footnote)
-                        .foregroundColor(.secondary)
-                }
-                .padding(.top, 8)
-
-                VStack(alignment: .leading, spacing: 8) {
-                    Text("Quand l'utiliser ?")
-                        .font(.headline)
-                    Text("• Séances explosives ou de vitesse.\n• Athlètes confirmés disposant de peu de temps.\n• À privilégier sur les mouvements polyarticulaires. Pour les isolations, limitez-vous à 1-2 séries légères.")
-                        .font(.subheadline)
-                        .foregroundColor(.secondary)
-                }
+                .padding(.horizontal, 16)
+                .padding(.top, 12)
+                .padding(.bottom, 24)
             }
         }
-        .navigationTitle("Modèles d'échauffement")
+        .navigationTitle(Localization.localizedString("Modèles d'échauffement"))
+    }
+
+    private func modelCard(
+        title: String,
+        icon: String,
+        iconGradient: LinearGradient,
+        description: String,
+        protocolLines: [String],
+        detail: String,
+        whenToUse: String
+    ) -> some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack(spacing: 12) {
+                RoundedRectangle(cornerRadius: 14, style: .continuous)
+                    .fill(iconGradient)
+                    .frame(width: 44, height: 44)
+                    .overlay {
+                        Image(systemName: icon)
+                            .font(.headline.weight(.semibold))
+                            .foregroundStyle(.white)
+                    }
+
+                Text(title)
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(AppTheme.textPrimary)
+
+                Spacer()
+            }
+
+            Text(description)
+                .font(.body)
+                .foregroundStyle(AppTheme.textSecondary)
+
+            VStack(alignment: .leading, spacing: 8) {
+                Text(Localization.localizedString("Protocole recommandé"))
+                    .font(.headline)
+                    .foregroundStyle(AppTheme.textPrimary)
+
+                ForEach(Array(protocolLines.enumerated()), id: \.offset) { index, line in
+                    HStack(spacing: 8) {
+                        Text("\(index + 1)")
+                            .font(.caption.weight(.bold))
+                            .foregroundStyle(.white)
+                            .frame(width: 22, height: 22)
+                            .background(Circle().fill(AppTheme.accentAlt))
+
+                        Text(line)
+                            .font(.subheadline)
+                            .foregroundStyle(AppTheme.textPrimary)
+                    }
+                }
+
+                Text(detail)
+                    .font(.footnote)
+                    .foregroundStyle(AppTheme.textSecondary)
+            }
+            .padding(.top, 4)
+
+            VStack(alignment: .leading, spacing: 6) {
+                Text(Localization.localizedString("Quand l'utiliser ?"))
+                    .font(.headline)
+                    .foregroundStyle(AppTheme.textPrimary)
+
+                Text(whenToUse)
+                    .font(.subheadline)
+                    .foregroundStyle(AppTheme.textSecondary)
+            }
+        }
+        .appCard()
     }
 }
 

@@ -18,47 +18,83 @@ struct EstimateOneRMView: View {
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section(header: Text("Performance récente")) {
-                    TextField("Poids soulevé", text: $weightInput)
-                        .keyboardType(.decimalPad)
+            ZStack {
+                AppBackgroundView()
 
-                    Stepper(value: $reps, in: 1...20) {
-                        Text(Localization.localizedString("Répétitions: %d", arguments: reps))
+                ScrollView {
+                    VStack(spacing: 16) {
+                        inputCard
+                        estimationCard
+
+                        if let estimate {
+                            Button {
+                                onUseEstimate(estimate)
+                                dismiss()
+                            } label: {
+                                Label(Localization.localizedString("Utiliser comme charge de travail"), systemImage: "arrow.down.circle")
+                            }
+                            .buttonStyle(GradientActionButtonStyle())
+                        }
                     }
-                }
-
-                Section(header: Text("Estimation")) {
-                    if let estimate {
-                        Text(Localization.localizedString("1RM estimé : %.1f %@", arguments: estimate, unit.displayName))
-                            .font(.title3.weight(.semibold))
-                            .padding(.vertical, 4)
-
-                        Text("Formule de Brzycki – résultat indicatif, votre 1RM réel peut varier.")
-                            .font(.footnote)
-                            .foregroundColor(.secondary)
-                    } else {
-                        Text("Entrez un poids et des répétitions valides pour obtenir une estimation.")
-                            .foregroundColor(.secondary)
-                    }
-                }
-
-                if let estimate {
-                    Button {
-                        onUseEstimate(estimate)
-                        dismiss()
-                    } label: {
-                        Label("Utiliser comme charge de travail", systemImage: "arrow.down.circle")
-                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 12)
+                    .padding(.bottom, 24)
                 }
             }
-            .navigationTitle("Estimer mon 1RM")
+            .navigationTitle(Localization.localizedString("Estimer mon 1RM"))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Fermer") { dismiss() }
+                    Button(Localization.localizedString("Fermer")) { dismiss() }
                 }
             }
         }
+    }
+
+    private var inputCard: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            Text(Localization.localizedString("Performance récente"))
+                .font(.headline)
+                .foregroundStyle(AppTheme.textPrimary)
+
+            TextField(Localization.localizedString("Poids soulevé"), text: $weightInput)
+                .keyboardType(.decimalPad)
+                .textFieldStyle(.plain)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 11)
+                .background(
+                    RoundedRectangle(cornerRadius: 12, style: .continuous)
+                        .fill(Color.white.opacity(0.78))
+                )
+
+            Stepper(value: $reps, in: 1...20) {
+                Text(Localization.localizedString("Répétitions: %d", arguments: reps))
+                    .foregroundStyle(AppTheme.textPrimary)
+            }
+        }
+        .appCard()
+    }
+
+    private var estimationCard: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            Text(Localization.localizedString("Estimation"))
+                .font(.headline)
+                .foregroundStyle(AppTheme.textPrimary)
+
+            if let estimate {
+                Text(Localization.localizedString("1RM estimé : %.1f %@", arguments: estimate, unit.displayName))
+                    .font(.title3.weight(.semibold))
+                    .foregroundStyle(AppTheme.accent)
+
+                Text(Localization.localizedString("Formule de Brzycki – résultat indicatif, votre 1RM réel peut varier."))
+                    .font(.footnote)
+                    .foregroundStyle(AppTheme.textSecondary)
+            } else {
+                Text(Localization.localizedString("Entrez un poids et des répétitions valides pour obtenir une estimation."))
+                    .font(.subheadline)
+                    .foregroundStyle(AppTheme.textSecondary)
+            }
+        }
+        .appCard()
     }
 }
 

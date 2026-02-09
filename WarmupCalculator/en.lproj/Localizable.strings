@@ -105,3 +105,8 @@
 "1RM estimé : %.1f %@" = "Estimated 1RM: %.1f %@";
 "Langue actuelle : %@" = "Current language: %@";
 "Niveau : %@" = "Level: %@";
+"RUNNING" = "RUNNING";
+"READY" = "READY";
+"Reset" = "Reset";
+"Start" = "Start";
+"Pause" = "Pause";

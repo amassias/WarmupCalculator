@@ -12,14 +12,15 @@ struct ContentView: View {
         TabView {
             MainCalculatorView()
                 .tabItem {
-                    Label("Calcul", systemImage: "flame.fill")
+                    Label(Localization.localizedString("Calcul"), systemImage: "flame.fill")
                 }
 
             ProfileView()
                 .tabItem {
-                    Label("Profil", systemImage: "person.crop.circle")
+                    Label(Localization.localizedString("Profil"), systemImage: "person.crop.circle")
                 }
         }
+        .tint(AppTheme.accent)
         .environmentObject(exerciseLibrary)
         .environment(\.locale, Locale(identifier: appLanguage.localeIdentifier))
     }

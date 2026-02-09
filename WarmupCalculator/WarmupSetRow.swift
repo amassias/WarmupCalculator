@@ -5,45 +5,61 @@ struct WarmupSetRow: View {
     let unit: WeightUnit
 
     var body: some View {
-        HStack(alignment: .center, spacing: 16) {
-            ZStack {
-                Circle()
-                    .fill(Color.blue.opacity(0.9))
-                    .frame(width: 34, height: 34)
-                Text("\(set.setNumber)")
-                    .font(.subheadline.weight(.bold))
-                    .foregroundColor(.white)
-            }
+        HStack(spacing: 14) {
+            setIndexBadge
 
-            VStack(alignment: .leading, spacing: 4) {
-                HStack {
+            VStack(alignment: .leading, spacing: 6) {
+                HStack(alignment: .firstTextBaseline) {
                     Text("\(set.weight, specifier: "%.1f") \(unit.displayName)")
-                        .font(.headline)
-                    if let note = set.note {
-                        Text(LocalizedStringKey(note))
-                            .font(.caption)
-                            .foregroundColor(.secondary)
-                    }
+                        .font(.headline.weight(.semibold))
+                        .foregroundStyle(AppTheme.textPrimary)
+
+                    Spacer()
+
+                    Text("\(set.percentage)%")
+                        .font(.caption.weight(.bold))
+                        .foregroundStyle(AppTheme.accent)
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(
+                            Capsule(style: .continuous)
+                                .fill(AppTheme.accent.opacity(0.14))
+                        )
                 }
 
                 Text(Localization.localizedString("%d répétitions • %d%%", arguments: set.reps, set.percentage))
                     .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .foregroundStyle(AppTheme.textSecondary)
+
+                if let note = set.note {
+                    Text(LocalizedStringKey(note))
+                        .font(.caption2.weight(.medium))
+                        .foregroundStyle(AppTheme.accentAlt)
+                }
             }
-
-            Spacer()
-
-            ProgressView(value: Double(set.percentage), total: 100)
-                .tint(.blue)
-                .frame(width: 70)
         }
-        .padding(.vertical, 8)
         .padding(.horizontal, 12)
+        .padding(.vertical, 11)
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(Color(uiColor: .systemBackground))
-                .shadow(color: Color.black.opacity(0.05), radius: 4, x: 0, y: 2)
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .fill(Color.white.opacity(0.76))
+                .overlay(
+                    RoundedRectangle(cornerRadius: 16, style: .continuous)
+                        .stroke(Color.white.opacity(0.82), lineWidth: 1)
+                )
         )
+    }
+
+    private var setIndexBadge: some View {
+        ZStack {
+            Circle()
+                .fill(AppTheme.coolGradient)
+                .frame(width: 38, height: 38)
+
+            Text("\(set.setNumber)")
+                .font(.subheadline.weight(.bold))
+                .foregroundStyle(.white)
+        }
     }
 }
 
@@ -54,6 +70,7 @@ struct WarmupSetRow_Previews: PreviewProvider {
             unit: .kg
         )
         .padding()
+        .background(AppBackgroundView())
         .previewLayout(.sizeThatFits)
     }
 }

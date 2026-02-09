@@ -6,46 +6,74 @@ struct AddExerciseView: View {
     @State private var name: String = ""
     @State private var type: ExerciseType = .compound
     @State private var equipment: EquipmentType = .barbell
+    @State private var errorMessage: String?
 
-    let onAdd: (String, ExerciseType, EquipmentType) -> Void
+    let onAdd: (String, ExerciseType, EquipmentType) throws -> Void
 
     var body: some View {
         NavigationStack {
-            Form {
-                Section(header: Text("Nom de l'exercice")) {
-                    TextField("Nom", text: $name)
-                }
+            ZStack {
+                AppBackgroundView()
 
-                Section(header: Text("Catégorie")) {
-                    Picker("Type", selection: $type) {
-                        ForEach(ExerciseType.allCases) { exerciseType in
-                            Text(exerciseType.displayName).tag(exerciseType)
+                Form {
+                    Section {
+                        TextField(Localization.localizedString("Nom"), text: $name)
+                    } header: {
+                        Text(Localization.localizedString("Nom de l'exercice"))
+                    }
+
+                    Section(header: Text(Localization.localizedString("Catégorie"))) {
+                        Picker(Localization.localizedString("Type"), selection: $type) {
+                            ForEach(ExerciseType.allCases) { exerciseType in
+                                Text(exerciseType.displayName).tag(exerciseType)
+                            }
+                        }
+
+                        Picker(Localization.localizedString("Matériel"), selection: $equipment) {
+                            ForEach(EquipmentType.allCases) { equipment in
+                                Label(equipment.displayName, systemImage: equipment.sfSymbolName)
+                                    .tag(equipment)
+                            }
                         }
                     }
-                    Picker("Matériel", selection: $equipment) {
-                        ForEach(EquipmentType.allCases) { equipment in
-                            Label(equipment.displayName, systemImage: equipment.sfSymbolName)
-                                .tag(equipment)
-                        }
+
+                    Section(footer: Text(Localization.localizedString("Les exercices ajoutés sont sauvegardés localement sur l'appareil."))) {
+                        EmptyView()
                     }
                 }
-
-                Section(footer: Text("Les exercices ajoutés sont sauvegardés localement sur l'appareil.")) {
-                    EmptyView()
-                }
+                .scrollContentBackground(.hidden)
             }
-            .navigationTitle("Nouvel exercice")
+            .navigationTitle(Localization.localizedString("Nouvel exercice"))
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
-                    Button("Fermer") { dismiss() }
+                    Button(Localization.localizedString("Fermer")) { dismiss() }
                 }
                 ToolbarItem(placement: .confirmationAction) {
-                    Button("Ajouter") {
-                        onAdd(name, type, equipment)
-                        dismiss()
+                    Button(Localization.localizedString("Ajouter")) {
+                        do {
+                            try onAdd(name, type, equipment)
+                            dismiss()
+                        } catch {
+                            errorMessage = error.localizedDescription
+                        }
                     }
                     .disabled(name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty)
                 }
+            }
+            .alert(
+                Localization.localizedString("Erreur"),
+                isPresented: Binding(
+                    get: { errorMessage != nil },
+                    set: { shouldShow in
+                        if !shouldShow {
+                            errorMessage = nil
+                        }
+                    }
+                )
+            ) {
+                Button(Localization.localizedString("OK"), role: .cancel) {}
+            } message: {
+                Text(errorMessage ?? "")
             }
         }
     }
